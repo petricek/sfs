@@ -1,0 +1,38 @@
+-----------------------------------------------------------------------------
+  READ
+-----------------------------------------------------------------------------
+
+Our function read, that is implemented in libsfs does the following:
+
+If it is asked to read from 'offset' 'count' bytes, it first generates
+smallest larger buffer containing the requested data, that has size a
+multiple of cipher block. Then it reads in data, asks daemon (sfsd) to
+decrypt it and finally cuts out the data that were requested by the user.
+
+
+READ(fd, offset, count) -> buf
+------------------------------
+IN: fd, offset, count
+OUT: buf[count]
+------------------------------
+offset, count 
+  |
+  |  Resize to multiple of cipher block size
+  V
+sfs_offset,sfs_count  
+  |
+  |  Passed to daemon 
+  V
+sfs_buf,sfs_count 
+  |
+  |  Decrypted by daemon
+  V
+e_sfs_buf,sfs_count
+  |
+  |  Passed back
+  V
+e_sfs_offset,sfs_count  
+  |
+  |  Cut out the interesting data
+  V
+buf,count

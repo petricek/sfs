@@ -1,0 +1,49 @@
+-----------------------------------------------------------------------------
+  SFS_ENCRYPTION
+-----------------------------------------------------------------------------
+
+  This file discusses the encryption methods used in SFS
+
+  When implementing SFS we needed two types of ciphers - symetric and
+  asymetric.
+
+
+-----------------------------------------------------------------------------
+  Symetric cipher
+-----------------------------------------------------------------------------
+
+  Symetric cipher is used to actually encrypt the files. Files are encrypted
+  using automatically and randomly generated keys, that are hidden to the
+  user. These keys are stored in files .sfsdir .sfsgdir .sfsadir in
+  directory in which is situated the file they are providing keys for. Read
+  and write access to these files has just the daemon (sfsd), that does all
+  the key management. Symetric cipher is then used for encrypting user
+  private key by his login password.
+
+  Blowfish was chosen as a free fast strong and simple symetric cipher.
+
+-----------------------------------------------------------------------------
+  Asymetric cipher
+-----------------------------------------------------------------------------
+
+  Asymetric cipher is used for encryption of file keys stored in hidden
+  files in directories. It is useful, because file key can be encrypted and
+  added to .sfsdir by anyone - you need just the public key. And can be
+  decrypted just by user that enters correct password and so can decrypt his
+  private key.
+
+  That means that even when you obtain physical access to the hard drive
+  (probably by stealing it) you are still unable to decrypt the files even
+  thou the file keys are on the disk.
+
+  In SFS minimalistic RSA implementation by Risto
+  Paasivirta(paasivir@jyu.fi) was used.
+
+-----------------------------------------------------------------------------
+  General 
+-----------------------------------------------------------------------------
+
+  Probably the greatest weakness of SFS is in using user password for
+  encryption of private key. This can be avoided by forcing long and hardly
+  guesable passwords or by using a different passphrase to log into SFS.
+

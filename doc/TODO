@@ -1,0 +1,27 @@
+-----------------------------------------------------------------------------
+  TODO 
+-----------------------------------------------------------------------------
+
+  This file contains isome things that ought to be done.
+
+
+  File encryption in CBC (Cipher Block Chaining) mode. 
+  - files currently encrypted useng ECB mode that is susceptible to block
+  comparison attack and is not very good for stream encryption.
+
+  Several function envelopes are stil not done or tested.
+
+  Tune SFS for performance.
+  - encrytpion when reading and writing to files is quite slow.
+
+  Handling of work with stdin, stdout and stderr
+
+  .
+  .
+  .
+
+  If you have any suggestions contact the authors:
+
+      Michal Svec <rebel@atrey.karlin.mff.cuni.cz>
+      Vaclav Petricek <petricek@kolej.mff.cuni.cz>
+ 

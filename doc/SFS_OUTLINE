@@ -1,0 +1,95 @@
+-----------------------------------------------------------------------------
+  SFS - Outline of inner workings
+-----------------------------------------------------------------------------
+
+  This is a short outline of what happens in SFS.
+
+-----------------------------------------------------------------------------
+  SFS daemon
+-----------------------------------------------------------------------------
+
+  The main part of SFS is SFS daemon called sfsd.  There is the most of
+functionality of SFS in it.  It does encryption, decryption, user and file
+management.  
+
+-----------------------------------------------------------------------------
+  SFS library
+-----------------------------------------------------------------------------
+
+  The next part of SFS is SFS library called libsfs.  There are function
+  envelopes that take care of forwarding requests to sfsd that does the real
+  work of encryption and similar tasks.  The communication between sfsd and
+  library functions is done through message passing.  So sfsd listens on one
+  permanent message queue for incoming requets.  When program calls the
+  enveloped function, it sends message to daemon with a request for that
+  operation.  It also starts listening on reply queue for reply.
+
+  We will show what is going on on an example of a really simple program. 
+
+  The source code for this program will look like this:
+
+int main()
+{
+  char buf[10];
+  int fd = open( "testing_file", O_READ );
+  read( fd, buf, 10 );
+  close( fd );
+}
+
+  Login.
+
+  Before running this program on encrypted file "testing_file" the user has
+  to log on to the system.  He can do this by running sfs_login.  It can be
+  done automaticaly by modifying login program or, better, by using the PAM
+  (Pluggable Authentication Module) in modern systems.  (Note: PAM module is
+  not ready yet.) By this he tells his password to sfs_login that reads
+  user's encrypted private key from SFS directory and decrypts it with users
+  password.  The decrypted private key is send to sfsd.  SFS daemon
+  remembers uid and decrypted private key for future use until the user logs
+  off.
+
+  open( "testing_file", O_READ );
+
+  There are three calls in the program.  First call is to open file
+  "testing_file" only for reading.  This call is catched by libsfs envelope. 
+  The open envelope tells SFS daemon that we are about to open some file. 
+  And sends him uid of user who opened that file.  SFS daemon finds out
+  whether the file is encrypted or not.  If it is encrypted it adds to its
+  internal structure pid of process, that opened that file, file descriptor
+  of opened file and file key that is read from file .sfsdir or similar from
+  file directory and decrypted by users private key.  The key is then
+  remebered for future use for encryption or decryption of data from this
+  file.
+
+  read( fd, buf, 10 );
+
+  The next call is to read ten blocks from that file.  The first what
+function envelope does is to compute the right number of it must read.  Then
+it reads appropriate count and send it to the sfsd.  It decrypts it with the
+file key and sends it back.  Envelope simply returns it to the user.
+
+  close( fd );
+
+  And the close call tells daemon to remove that file from its internal
+structures and forget its key.
+
+
+  As you may found there is used two types of cipher.  The first one is a
+symmetric cipher and it is used for encryption and decryption of files.  And
+the second one is asymmetric cipher and it is used for users and groups key
+management.  At the time it is implemented by blowfish as symmetric cipher
+and RSA as asymmetric cipher with public and private keys.
+
+
+  That before was a simple example of what happens while the simple program
+runs.  There is also more complex situations.  Such as if user is not owner
+but is in owner group or is not anythere at all.  This is done by group and
+"all" key management.  Each group (Note that "all" is a special group) has
+its pair of private and public key.  And it is stored on the disk in the
+file in SFS directory.  And it is stored encrypted bu users public key for
+each user in that group.  This allows each user to simply add another one to
+its group without knowledge of its private key.  And if user reads file he
+is in owner group the sfsd does this.  It reads groups private key, decrypt
+it with user's private key and with it decrypts the file key stored in the
+directory structures.
+

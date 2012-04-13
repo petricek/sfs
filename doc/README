@@ -1,0 +1,71 @@
+------------------------------------------------------------------------------
+  SFS - Secure File System
+------------------------------------------------------------------------------
+
+  SFS provides transparent encryption and decryption of files on top of
+  classical filesystem.
+
+------------------------------------------------------------------------------
+  Our aproach.
+------------------------------------------------------------------------------
+
+There are two possible solutions to this problem:
+
+1.The first one is to modify kernel filesystem implementation. This solution
+has some advantages.  For example: speed of implementation, usage of
+internal kernel structures and more simple implemenatation of some
+operations.  But it has also some disadvanatages.  First of all it requires
+modification of kernel.  That means modification of the main part of the
+system, that can cause instability and is very hard to debug or to profile.
+
+2.That is why we selected different approach and we implemented SFS in user
+space.  We have done that by providing daemon (sfsd) which does most of the
+work for SFS and the libsfs shared library, that is in fact an envelope for
+the standard file operations such as open, read or write that provides
+additional functionality - encryption. Even though implemented in user
+space, SFS remains completely transparent to the user.
+
+------------------------------------------------------------------------------
+  Current state.
+------------------------------------------------------------------------------
+
+By now it seems to be working fine but there surely are many bugs and also the code is not yet perfectly tuned for performance.  
+
+------------------------------------------------------------------------------
+  Files.
+------------------------------------------------------------------------------
+
+  There are some files distributed with this package you may be interested in. 
+README
+  - That is what you are reading now. 
+SFS_OUTLINE 
+  - Outlines internal structure and inner workings of SFS.
+SFS_FILES
+  - Describes files used by SFS, its format and its contents.
+SFS_READ
+  - Shows you how read works.
+SFS_CALLS
+  - Can help you understand what different SFS calls do.
+SFS_ENCRYPTION
+  - Discusses cryptographical aspects of SFS
+SFS_EXAMPLE
+  - Step by step example on using SFS
+
+------------------------------------------------------------------------------
+  Instalation.
+------------------------------------------------------------------------------
+
+To install this package type "make install" in the source directory. You
+can, optionally, type "make install INST_ROOT=/some/dir" to install to a
+different root directory.
+
+------------------------------------------------------------------------
+  Authors.
+------------------------------------------------------------------------
+
+  Feel free to contact us if you have any problems comments questions or
+  suggestions.
+
+Michal Svec <rebel@atrey.karlin.mff.cuni.cz>
+Vaclav Petricek <petricek@kolej.mff.cuni.cz>
+

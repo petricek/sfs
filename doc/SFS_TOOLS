@@ -1,0 +1,43 @@
+------------------------------------------------------------------------------
+  SFS_TOOLS
+------------------------------------------------------------------------------
+
+  This file describes various tools that come with SFS.
+
+  These tools are usually equivalent to existing programs in unix and
+  provide additional functionality. Thay can be merged with them in the
+  future.
+
+  sfsd
+  ~~~~
+  Runs as root. When run under different user it can serve just files of that
+user. It provides the main functionality of SFS. It does all the encryption,
+decryption and key management.
+
+  The programs from distribution include, aside from sfsd and libsfs, the
+  following:
+
+  sfs_login
+  ~~~~~~~~~
+  Gets user password and uses that to decrypt user private key and send it to
+sfsd. In our implementation has to be setuid so that noone can write their own
+sfs_login that would spy the passwords. sfs_login has to authentificate itself
+to daemon and that can be don just while setuid.
+
+  sfs_chmod
+  ~~~~~~~~~
+  Used to change files state to and from encrypted:
+
+  $ sfs_chmod +e filename
+  $ sfs_chmod -e filename
+
+  sfs_adduser
+  ~~~~~~~~~~~
+  Run by root to generate users pairs of asymetric keys. Also generates
+keys for user group.
+
+  sfs_passwd
+  ~~~~~~~~~~
+  Used when user wants to change his/her password. It gets user encrypted
+private key - decrypts it with old password and reencrypts it with the new one.
+Finally it stores the encrypted password for future use.

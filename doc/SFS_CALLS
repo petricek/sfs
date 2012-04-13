@@ -1,0 +1,92 @@
+  SFS_CALLS
+
+  This file shows what happens when one of our calls or system programs 
+  contacts daemon and asks him for a favour.
+
+------------------------------------------------------------------------------
+CALL			DAEMON				CALLS
+------------------------------------------------------------------------------
+login	->	(uid,key)
+
+		users[uid] = key
+O.K.	<-
+-----------------------------------------------------------------------------
+open	->	(path,fd,pid,uid)
+					->	get_file_key(path,uid)
+			ekey		<-
+					->	decrypt_key(ekey,user_key[uid])
+			dkey		<-
+
+		files[pid,df] = dkey
+O.K.	<-
+-----------------------------------------------------------------------------
+close	->	(fd,pid)
+
+		delete files[pid,fd]
+O.K.	<- 
+-----------------------------------------------------------------------------
+read	->	(fd,pid,buf,count)
+
+		dkey = files[pid,fd]
+					->	decrypt(buf,count,dkey)
+			buf		<-
+buf	<-
+-----------------------------------------------------------------------------
+write	->	(fd,pid,buf,count)
+
+		dkey = files[pid,fd]
+					->	encrypt(buf,count,dkey)
+			buf		<-
+buf	<-
+-----------------------------------------------------------------------------
+chmod-	->	(path,uid)
+
+					->	get_user_public_key(uid)
+			key		<-
+					->	get_file_key(path,uid)
+			ekey		<-
+					->	decrypt_key(ekey,key)
+			dkey		<-
+
+		while(!EOF) do
+					->	read(count)
+			buf		<-
+					->	decrypt(buf,count,dkey)
+			buf		<-
+					->	write(buf,count)
+			O.K.		<-
+
+					->	delete_file_key(path,uid)
+			O.K.		<-
+					->	delete_g_file_key(path,gid)
+			O.K.		<-
+					->	delete_a_file_key(path)
+			O.K.		<-
+O.K.	<-
+------------------------------------------------------------------------------
+chmod+	->	(path,uid)
+
+		                        ->      get_user_public_key() 
+                        key             <-
+					->	random_key()
+			dkey		<-
+					->	encrypt_key(dkey,key)
+			ekey		<-
+
+		while(!EOF) do
+					->	read(count)
+			buf		<-
+					->	encrypt(buf,count,dkey)
+			buf		<-
+					->	write(buf,count)
+			O.K.		<-
+
+					->	write_file_key(path,uid,ekey)
+			O.K.		<-
+					->	write_g_file_key(path,gid,ekey)
+			O.K.		<-
+					->	write_a_file_key(path,ekey)
+			O.K.		<-
+O.K.	<-
+------------------------------------------------------------------------------
+

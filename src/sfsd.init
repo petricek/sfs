@@ -1,0 +1,49 @@
+#!/bin/bash
+#
+#	/etc/rc.d/init.d/sfsd
+#
+# Starts the sfs daemon
+#
+# description: ...
+#
+#
+# Michal Svec (c) 1998 <rebel@atrey.karlin.mff.cuni.cz>
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+test -f /usr/sbin/sfsd || exit 0
+
+
+#
+#	See how we were called.
+#
+case "$1" in
+  start)
+	# Check if sfsd is already running
+	if [ ! -f /var/lock/subsys/sfsd ]; then
+	    echo -n 'Starting sfs daemon: '
+	    daemon /usr/sbin/sfsd
+	    echo
+	    touch /var/lock/subsys/sfsd
+	fi
+	;;
+  stop)
+	echo -n 'Stopping sfs daemon: '
+	killproc /usr/sbin/sfsd
+	echo
+	rm -f /var/lock/subsys/sfsd
+	;;
+  reload|restart)
+	$0 stop
+	$0 start
+	;;
+  status)
+	status /usr/sbin/sfsd
+	;;
+  *)
+	echo "Usage: sfsd {start|stop|restart|reload|status}"
+	exit 1
+esac
+
+exit 0

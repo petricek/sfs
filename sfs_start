@@ -1,0 +1,3 @@
+# Type ". sfs_start" to start SFS subsystem
+
+export LD_PRELOAD=/usr/lib/libsfs.so

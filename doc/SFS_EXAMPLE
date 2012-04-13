@@ -1,0 +1,35 @@
+-------------------------------------------------------------------------------
+  SFS_EXAMPLE
+-------------------------------------------------------------------------------
+
+  * This file will take you step by step to the wonderful world of SFS *
+
+  First you have to start the daemon:
+
+  $ sfsd
+
+  You have to ensure that libsfs is called instead of standard library. That
+  is achieved by setting LD_PRELOAD variable. You have a script prepared for
+  that so just type:
+ 
+  $ . sfs_start
+
+  To unset the variable use similarly sfs_stop.
+  Next you have to generate your private and public keys:
+
+  $ adduser
+  
+  enter your username and password that you want to log into SFS with.
+  Now log into SFS:
+
+  $ sfs_login
+
+  Choose a file you want to encrypt and perform the following on it:
+
+  $ sfs_chmod +e filename
+
+  Now your file 'filename' is encrypted but you can work with it as if it
+  were still plaintext.  You can do the following:
+
+  $ cat filename
+
